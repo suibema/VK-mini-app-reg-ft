@@ -89,7 +89,7 @@ const videoBlocks = ['first_video_choice', 'first_video', 'second_video_choice']
 
 const allBlocks = [...defaultBlocks, ...videoBlocks];
 
-window.isVideo = window.tgUserStartParam.includes('video');
+window.isVideo = window.vkUserStartParam.includes('video');
   
 
   let visibleBlocks;
@@ -486,7 +486,7 @@ form.addEventListener('submit', async function (e) {
         "Скрининг итог (первый)": approved_first,
         "Скрининг итог (второй)": approved_second,
         "tg-id": window.vkUserId,
-        "start-param": window.tgUserStartParam,
+        "start-param": window.vkUserStartParam,
         "Инструменты Video Editor": window.selectedVideoValues.join(', '),
         "Резюме": attachmentData
       })
@@ -505,4 +505,5 @@ restoreForm();
 })
   .catch((error) => {
     console.error('VK init error:', error);
+
   });
