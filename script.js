@@ -1,8 +1,4 @@
-vkBridge.send('VKWebAppInit')
-  .then(async () => {
-    console.log('VK Mini App initialized');
 const form = document.getElementById('reg-form');
-const launchParams = await vkBridge.send('VKWebAppGetLaunchParams');
 
 vkBridge.send('VKWebAppInit')
   .then(() => {
@@ -507,4 +503,5 @@ form.addEventListener('submit', async function (e) {
 
 form.addEventListener('input', saveForm);
 restoreForm();
+
 
