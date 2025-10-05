@@ -76,7 +76,7 @@
             console.log('No explicit start tag field detected; check the dumps above to see what VK passes in your case.');
           }
           const startParams = new URLSearchParams(window.location.search)
-          console.log(startParams)
+          console.log(startParams, window.location.hash)
         } catch (e) {
           console.error('Bridge error:', e);
           document.getElementById('user').textContent = 'Error: ' + (e?.message || e);
