@@ -75,13 +75,46 @@
           } else {
             console.log('No explicit start tag field detected; check the dumps above to see what VK passes in your case.');
           }
-          const startParams = new URLSearchParams(window.location.search)
-          console.log(startParams, window.location.hash)
         } catch (e) {
           console.error('Bridge error:', e);
           document.getElementById('user').textContent = 'Error: ' + (e?.message || e);
         }
       })();
     </script>
+    <script>
+async function getLaunchParams() {
+  // 1) canonical: bridge
+  let bridgeParams = {};
+  try {
+    await vkBridge.send('VKWebAppInit');
+    bridgeParams = await vkBridge.send('VKWebAppGetLaunchParams');
+  } catch (e) {
+    console.warn('Bridge launch params unavailable:', e);
+  }
+
+  // 2) fallback: URL search + hash (VK usually uses HASH)
+  const out = {};
+  const q = new URLSearchParams(window.location.search);        // often empty in VK
+  q.forEach((v, k) => out[k] = v);
+
+  const rawHash = window.location.hash.startsWith('#')
+    ? window.location.hash.slice(1)
+    : window.location.hash;
+  const h = new URLSearchParams(rawHash);
+  h.forEach((v, k) => out[k] = v);
+
+  // Merge: bridge first (authoritative), then URL as a backup
+  return { ...out, ...bridgeParams };
+}
+
+(async () => {
+  const lp = await getLaunchParams();
+  console.log('ALL launch params:', lp);
+
+  // Typical fields to look at:
+  const vkRef = lp.vk_ref || lp.ref || lp.start || lp.start_param || null;
+  console.log('vk_ref (or custom):', vkRef);
+})();
+</script>
   </body>
 </html>
