@@ -1,17 +1,22 @@
 const form = document.getElementById('reg-form');
 
-vkBridge.send('VKWebAppInit')
-  .then(() => {
-    console.log('VK Mini App initialized');
-    vkBridge.send('VKWebAppGetLaunchParams').then(launchParams => {
-      const id = launchParams.vk_user_id; // Replaces Telegram's user.id
-      const startParam = launchParams.start_data; // Replaces start_param
-      console.log('User ID:', vkUserId, 'Start Data:', startData);
-      window.vkUserId = id;
-      window.vkUserStartParam = startParam;
-    });
-  })
-  .catch(error => console.error('VK init error:', error));
+vkBridge.send('VKWebAppInit').then(() => {
+  vkBridge.send('VKWebAppGetLaunchParams').then(launchParams => {
+    const vkUserId = launchParams.vk_user_id;
+    const startData = launchParams.start_data;
+    const accessToken = launchParams.access_token;
+    // Call VK API directly to verify user
+    vkBridge.send('VKWebAppCallAPIMethod', {
+      method: 'users.get',
+      params: { user_ids: vkUserId, access_token: accessToken, v: '5.199' }
+    }).then(response => {
+      if (response.response && response.response[0].id == vkUserId) {
+      window.vkUserId = vkUserId
+      window.vkUserStartParam = startData
+      }
+    }).catch(err => console.error('VK API error:', err));
+  });
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   const select = document.getElementById('city');
@@ -503,5 +508,6 @@ form.addEventListener('submit', async function (e) {
 
 form.addEventListener('input', saveForm);
 restoreForm();
+
 
 
