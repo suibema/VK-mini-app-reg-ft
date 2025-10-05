@@ -1,50 +1,85 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <title>VK Mini App</title>
+    <meta charset="utf-8" />
+    <title>VK Mini App – launch params</title>
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
-    <script>
-    (async () => {
-      await vkBridge.send('VKWebAppInit');
-    
-      // получаем токен под твоё mini app
-      const { access_token } = await vkBridge.send('VKWebAppGetAuthToken', {
-        app_id: 54187231, scope: '' // нужные scope
-      });
-    
-      // вызываем метод VK API через Bridge (без CORS проблем)
-      const resp = await vkBridge.send('VKWebAppCallAPIMethod', {
-        method: 'users.get',
-        params: { v: '5.199', access_token }
-      });
-    
-      console.log(resp);
-    })();
-    </script>
-
-    <script src="test_id.js"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; padding: 16px; }
+      pre { background:#f6f8fa; padding:12px; border-radius:8px; overflow:auto; }
+      .row { margin: 10px 0; }
+    </style>
   </head>
   <body>
     <h1>VK Mini App</h1>
-    <div id="output">Loading...</div>
+    <div class="row" id="user">Loading user…</div>
+    <div class="row"><strong>VK API users.get:</strong> <span id="api">—</span></div>
+    <div class="row"><strong>Launch params (bridge):</strong></div>
+    <pre id="lp">—</pre>
+    <div class="row"><strong>Launch params (URL parsed):</strong></div>
+    <pre id="urlp">—</pre>
 
     <script>
-      // инициализация vkBridge
-      vkBridge.send('VKWebAppInit');
+      (async () => {
+        try {
+          // Always init bridge first
+          await vkBridge.send('VKWebAppInit');
 
-      // получение информации о пользователе
-      vkBridge.send('VKWebAppGetUserInfo')
-        .then((data) => {
-          document.getElementById('output').textContent =
-            `User ID: ${data.id}, ${data.first_name} ${data.last_name}`;
-          console.log('User info:', data);
-        })
-        .catch((error) => {
-          document.getElementById('output').textContent =
-            'Ошибка получения данных: ' + error.message;
-          console.error(error);
-        });
+          // 1) Basic user (works without any scopes)
+          const u = await vkBridge.send('VKWebAppGetUserInfo');
+          document.getElementById('user').textContent = `User: ${u.first_name} ${u.last_name} (id: ${u.id})`;
+
+          // 2) VK API call via Bridge (note: look into resp.response)
+          const { access_token } = await vkBridge.send('VKWebAppGetAuthToken', {
+            app_id: 54187231,  // <— replace with your app id
+            scope: ''                  // no extra permissions needed for users.get
+          });
+
+          const apiResp = await vkBridge.send('VKWebAppCallAPIMethod', {
+            method: 'users.get',
+            params: { v: '5.199', access_token }
+          });
+          console.log('users.get raw:', apiResp);
+          document.getElementById('api').textContent = JSON.stringify(apiResp.response || apiResp, null, 2);
+
+          // 3) Launch params via Bridge (the canonical source in VK environment)
+          //    Look here for fields like vk_user_id, vk_app_id, sign, vk_platform, vk_ref, etc.
+          const launch = await vkBridge.send('VKWebAppGetLaunchParams');
+          console.log('Launch (bridge):', launch);
+          document.getElementById('lp').textContent = JSON.stringify(launch, null, 2);
+
+          // 4) Fallback: parse URL (both ?query and #hash) so you can see EVERYTHING passed in
+          const collect = () => {
+            const out = {};
+            const q = new URLSearchParams(window.location.search);
+            q.forEach((v, k) => out[k] = v);
+            const h = new URLSearchParams(window.location.hash.startsWith('#') ? window.location.hash.slice(1) : window.location.hash);
+            h.forEach((v, k) => out[k] = v);
+            return out;
+          };
+          const urlParams = collect();
+          console.log('Launch (url):', urlParams);
+          document.getElementById('urlp').textContent = JSON.stringify(urlParams, null, 2);
+
+          // If you’re specifically looking for a “start tag”, check common fields:
+          const startTag =
+            launch.start_param ||       // if present in your setup
+            launch.vk_ref ||            // common referral field in VK launch params
+            urlParams.start_param ||    // if someone passed it explicitly
+            urlParams.vk_ref ||         // referral via URL
+            urlParams.start ||          // some projects use 'start'
+            null;
+
+          if (startTag) {
+            console.log('Detected start tag:', startTag);
+          } else {
+            console.log('No explicit start tag field detected; check the dumps above to see what VK passes in your case.');
+          }
+        } catch (e) {
+          console.error('Bridge error:', e);
+          document.getElementById('user').textContent = 'Error: ' + (e?.message || e);
+        }
+      })();
     </script>
   </body>
 </html>
