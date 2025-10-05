@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>VK Mini App</title>
+    <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+  </head>
+  <body>
+    <h1>VK Mini App</h1>
+    <div id="output">Loading...</div>
+
+    <script>
+      // инициализация vkBridge
+      vkBridge.send('VKWebAppInit');
+
+      // получение информации о пользователе
+      vkBridge.send('VKWebAppGetUserInfo')
+        .then((data) => {
+          document.getElementById('output').textContent =
+            `User ID: ${data.id}, ${data.first_name} ${data.last_name}`;
+          console.log('User info:', data);
+        })
+        .catch((error) => {
+          document.getElementById('output').textContent =
+            'Ошибка получения данных: ' + error.message;
+          console.error(error);
+        });
+    </script>
+  </body>
+</html>
