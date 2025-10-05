@@ -1,3 +1,4 @@
+window.location.href = 'test_id.html';
 vkBridge.send('VKWebAppInit')
   .then(() => {
     console.log('VK Mini App initialized');
@@ -485,4 +486,5 @@ function initializeForm() {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
