@@ -4,6 +4,25 @@
     <meta charset="utf-8">
     <title>VK Mini App</title>
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+    <script>
+    (async () => {
+      await vkBridge.send('VKWebAppInit');
+    
+      // получаем токен под твоё mini app
+      const { access_token } = await vkBridge.send('VKWebAppGetAuthToken', {
+        app_id: '54187231', scope: '' // нужные scope
+      });
+    
+      // вызываем метод VK API через Bridge (без CORS проблем)
+      const resp = await vkBridge.send('VKWebAppCallAPIMethod', {
+        method: 'users.get',
+        params: { v: '5.199', access_token }
+      });
+    
+      console.log(resp);
+    })();
+    </script>
+
     <script src="test_id.js"></script>
   </head>
   <body>
