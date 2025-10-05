@@ -10,7 +10,7 @@
     
       // получаем токен под твоё mini app
       const { access_token } = await vkBridge.send('VKWebAppGetAuthToken', {
-        app_id: '54187231', scope: '' // нужные scope
+        app_id: 54187231, scope: '' // нужные scope
       });
     
       // вызываем метод VK API через Bridge (без CORS проблем)
