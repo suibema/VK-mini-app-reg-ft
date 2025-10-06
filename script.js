@@ -1,3 +1,5 @@
+window.location.href = 'index.html';
+
 function initializeForm() {
   const form = document.getElementById('reg-form');
   if (!form) {
@@ -418,6 +420,7 @@ function initializeForm() {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
 
