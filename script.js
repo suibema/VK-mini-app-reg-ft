@@ -19,8 +19,6 @@ vkBridge.send('VKWebAppInit')
   .catch(err => {
     console.error('VK init error:', err);
     document.getElementById('reg-error').textContent = 'Ошибка инициализации VK: ' + err.message;
-    window.vkUserId = 'test_user_123';
-    window.vkUserStartParam = '';
     initializeForm();
   });
 
@@ -432,6 +430,7 @@ function initializeForm() {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
 
