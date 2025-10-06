@@ -1,55 +1,8 @@
-window.location.href = 'test_id.html';
 vkBridge.send('VKWebAppInit')
   .then(() => {
     console.log('VK Mini App initialized');
-    vkBridge.send('VKWebAppGetLaunchParams')
-      .then(launchParams => {
-        const vkUserId = launchParams.vk_user_id; // Like Telegram's user.id
-        const startData = launchParams.start_data || ''; // Like Telegram's start_param, default to empty string
-        const accessToken = launchParams.access_token; // Required for VK API
-
-        if (!accessToken) {
-          console.error('No access_token provided in launchParams');
-          // Fallback for testing (optional)
-          window.vkUserId = 'test_user_123'; // Mock for local testing
-          window.vkUserStartParam = startData || 'test_param';
-          initializeForm(); // Proceed to form logic
-          return;
-        }
-
-        // Verify user via VK API
-        vkBridge.send('VKWebAppCallAPIMethod', {
-          method: 'users.get',
-          params: {
-            user_ids: vkUserId,
-            access_token: accessToken,
-            v: '5.199'
-          }
-        })
-          .then(response => {
-            if (response.response && response.response[0].id == vkUserId) {
-              console.log('User verified:', {
-                vkUserId,
-                startData,
-                userInfo: response.response[0]
-              });
-              window.vkUserId = vkUserId;
-              window.vkUserStartParam = startData;
-              initializeForm();
-            } else {
-              console.error('User verification failed');
-              document.getElementById('reg-error').textContent = 'Ошибка верификации пользователя';
-            }
-          })
-          .catch(err => {
-            console.error('VK API error:', err);
-            document.getElementById('reg-error').textContent = 'Ошибка VK API: ' + err.error_data?.error_reason || 'Неизвестная ошибка';
-          });
-      })
-      .catch(err => {
-        console.error('Failed to get launch params:', err);
-        document.getElementById('reg-error').textContent = 'Ошибка инициализации: ' + err.message;
-      });
+    const u = await vkBridge.send('VKWebAppGetUserInfo')
+    window.vkUserId = u.id
   })
   .catch(err => {
     console.error('VK init error:', err);
@@ -63,7 +16,6 @@ function initializeForm() {
     return;
   }
 
-  // Dynamic field visibility (city, citizen, video editors, etc.)
   document.addEventListener('DOMContentLoaded', () => {
     const selectCity = document.getElementById('city');
     const otherCityInput = document.getElementById('city-other');
@@ -109,28 +61,8 @@ function initializeForm() {
         foreignPhoneType.value = foreignPhoneYes.checked ? foreignPhoneType.value : '';
       });
     }
-
-    // Show/hide blocks based on start_param
-    const defaultBlocks = ['first_default', 'second_default'];
-    const videoBlocks = ['first_video_choice', 'first_video', 'second_video_choice'];
-    const allBlocks = [...defaultBlocks, ...videoBlocks];
-    window.isVideo = window.vkUserStartParam.includes('video');
-
-    let visibleBlocks = window.isVideo ? videoBlocks : defaultBlocks;
-    if (!window.isVideo) {
-      document.getElementById('first_default')?.setAttribute('required', 'required');
-      document.getElementById('second_default')?.setAttribute('required', 'required');
-    }
-
-    allBlocks.forEach(id => {
-      const element = document.getElementById(id);
-      if (element) {
-        element.style.display = visibleBlocks.includes(id) ? 'block' : 'none';
-      }
-    });
   });
 
-  // Form save/restore
   const questionNames = [
     'surname', 'name', 'email', 'phone', 'city', 'city-other',
     'citizen', 'citizen-other', 'vuz', 'specialty', 'study', 'finished',
@@ -191,7 +123,6 @@ function initializeForm() {
     updateTextBlocks('second_default', questionMappings2);
   });
 
-  // Form submission
   function getSelectedCheckboxValues(name) {
     const checkboxes = document.querySelectorAll(`input[name="${name}"]:checked`);
     return Array.from(checkboxes).map(cb => cb.value);
@@ -466,7 +397,7 @@ function initializeForm() {
           'Скрининг итог (первый)': approved_first,
           'Скрининг итог (второй)': approved_second,
           'tg-id': window.vkUserId,
-          'start-param': window.vkUserStartParam,
+          'start-param': 'VK',
           'Инструменты Video Editor': window.selectedVideoValues.join(', '),
           'Резюме': attachmentData
         })
@@ -486,5 +417,6 @@ function initializeForm() {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
