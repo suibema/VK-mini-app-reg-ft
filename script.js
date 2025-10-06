@@ -1,7 +1,7 @@
 vkBridge.send('VKWebAppInit')
   .then(() => {
     console.log('VK Mini App initialized');
-    const u = await vkBridge.send('VKWebAppGetUserInfo')
+    const u = vkBridge.send('VKWebAppGetUserInfo')
     window.vkUserId = u.id
   })
   .catch(err => {
@@ -417,6 +417,7 @@ function initializeForm() {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
 
