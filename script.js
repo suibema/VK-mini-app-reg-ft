@@ -1,20 +1,21 @@
-vkBridge.send('VKWebAppInit')
-  .then(() => {
-    console.log('VK Mini App initialized');
-    const u = vkBridge.send('VKWebAppGetUserInfo')
-    window.vkUserId = u.id
-  })
-  .catch(err => {
-    console.error('VK init error:', err);
-    document.getElementById('reg-error').textContent = 'Ошибка инициализации VK: ' + err.message;
-  });
-
 function initializeForm() {
   const form = document.getElementById('reg-form');
   if (!form) {
     console.error('Form with ID "reg-form" not found');
     return;
   }
+
+  vkBridge.send('VKWebAppInit')
+  .then(() => {
+    console.log('VK Mini App initialized');
+    const u = vkBridge.send('VKWebAppGetUserInfo')
+    window.vkUserId = u.id
+    initializeForm();
+  })
+  .catch(err => {
+    console.error('VK init error:', err);
+    document.getElementById('reg-error').textContent = 'Ошибка инициализации VK: ' + err.message;
+  });
 
   document.addEventListener('DOMContentLoaded', () => {
     const selectCity = document.getElementById('city');
@@ -417,6 +418,7 @@ function initializeForm() {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
 
