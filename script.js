@@ -1,4 +1,28 @@
-window.location.href = 'index.html';
+vkBridge.send('VKWebAppInit')
+  .then(() => {
+    console.log('VK Mini App initialized');
+    Promise.all([
+      vkBridge.send('VKWebAppGetLaunchParams'),
+      vkBridge.send('VKWebAppGetUserInfo')
+    ])
+      .then(([launchParams, userInfo]) => {
+        window.vkUserId = launchParams.vk_user_id || userInfo.id || 'test_user_123';
+        console.log('User Info:', userInfo); // { id, first_name, last_name, photo_200, ... }
+        initializeForm();
+      })
+      .catch(err => {
+        console.error('Failed to get launch params or user info:', err);
+        document.getElementById('reg-error').textContent = 'Ошибка получения данных: ' + err.message;
+        initializeForm();
+      });
+  })
+  .catch(err => {
+    console.error('VK init error:', err);
+    document.getElementById('reg-error').textContent = 'Ошибка инициализации VK: ' + err.message;
+    window.vkUserId = 'test_user_123';
+    window.vkUserStartParam = '';
+    initializeForm();
+  });
 
 function initializeForm() {
   const form = document.getElementById('reg-form');
@@ -6,18 +30,6 @@ function initializeForm() {
     console.error('Form with ID "reg-form" not found');
     return;
   }
-
-  vkBridge.send('VKWebAppInit')
-  .then(() => {
-    console.log('VK Mini App initialized');
-    const u = vkBridge.send('VKWebAppGetUserInfo')
-    window.vkUserId = u.id
-    initializeForm();
-  })
-  .catch(err => {
-    console.error('VK init error:', err);
-    document.getElementById('reg-error').textContent = 'Ошибка инициализации VK: ' + err.message;
-  });
 
   document.addEventListener('DOMContentLoaded', () => {
     const selectCity = document.getElementById('city');
@@ -420,6 +432,7 @@ function initializeForm() {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
 
