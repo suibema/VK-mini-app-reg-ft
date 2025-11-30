@@ -1,24 +1,29 @@
-window.location.href = 'index.html';
+document.addEventListener('DOMContentLoaded', () => {
+  initializeForm();
+});
 
-function initializeForm() {
+async function initializeForm() {
   const form = document.getElementById('reg-form');
   if (!form) {
     console.error('Form with ID "reg-form" not found');
     return;
   }
 
-  vkBridge.send('VKWebAppInit')
-  .then(() => {
+  try {
+    await vkBridge.send('VKWebAppInit');
     console.log('VK Mini App initialized');
-    const u = vkBridge.send('VKWebAppGetUserInfo')
-    window.vkUserId = u.id
-    initializeForm();
-    configureFirstByStartParam()
-  })
-  .catch(err => {
+
+    const u = await vkBridge.send('VKWebAppGetUserInfo');
+    window.vkUserId = u.id;
+
+    configureFirstByStartParam();
+  } catch (err) {
     console.error('VK init error:', err);
-    document.getElementById('reg-error').textContent = 'Ошибка инициализации VK: ' + err.message;
-  });
+    const errorEl = document.getElementById('reg-error');
+    if (errorEl) {
+      errorEl.textContent = 'Ошибка инициализации VK: ' + err.message;
+    }
+  }
 
   document.addEventListener('DOMContentLoaded', () => {
     const selectCity = document.getElementById('city');
@@ -116,7 +121,7 @@ function configureFirstByStartParam() {
   const select = document.getElementById('first_default');
   if (!select) return;
 
-  const startParam = '-';
+  const startParam = 'projects';
 
   const mapping = [
     { keyword: 'projects', value: ['Projects', 'Survey'] },
