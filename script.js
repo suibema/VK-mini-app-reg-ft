@@ -1,3 +1,84 @@
+const questionMappings = [
+  ['Projects', 'textBlock1'],
+  ['Survey', 'textBlock2'],
+  ['Designer', 'textBlock3'],
+  ['Innovation', 'textBlock4'],
+  ['SMM', 'textBlock5'],
+  ['SMM в IT', 'textBlock6'],
+  ['Community marketing', 'textBlock7'],
+  ['Digital marketing', 'textBlock8'],
+  ['Accounts', 'textBlock9']
+];
+
+const questionMappings2 = [
+  ['Projects', 'textBlock1-2'],
+  ['Survey', 'textBlock2-2'],
+  ['Designer', 'textBlock3-2'],
+  ['Innovation', 'textBlock4-2'],
+  ['SMM', 'textBlock5-2'],
+  ['SMM в IT', 'textBlock6-2'],
+  ['Community marketing', 'textBlock7-2'],
+  ['Digital marketing', 'textBlock8-2'],
+  ['Accounts', 'textBlock9-2']
+];
+
+function updateTextBlocks(dropdownId, mappings) {
+  const dropdown = document.getElementById(dropdownId);
+  if (!dropdown) return;
+
+  const selectedValue = dropdown.value;
+
+  mappings.forEach(([_, textBlockId]) => {
+    const block = document.getElementById(textBlockId);
+    if (block) block.style.display = 'none';
+  });
+
+  const match = mappings.find(([optionValue]) => optionValue === selectedValue);
+  if (match) {
+    const block = document.getElementById(match[1]);
+    if (block) block.style.display = 'block';
+  }
+}
+
+function configureFirstByStartParam() {
+  const select = document.getElementById('first_default');
+  if (!select) return;
+
+  const startParam = 'projects'; // или из VK
+
+  const mapping = [
+    { keyword: 'projects', value: ['Projects', 'Survey'] },
+    { keyword: 'survey', value: ['Survey'] },
+    { keyword: 'innovation',  value: ['Innovation', 'SMM в IT']},
+    { keyword: 'gen_smm',  value: ['SMM', 'SMM в IT']},
+    { keyword: 'it_smm',  value: ['SMM в IT']},
+    { keyword: 'com_marketing',  value: ['Community marketing']},
+    { keyword: 'dig_marketing',  value: ['Digital marketing']},
+    { keyword: 'accounts',  value: ['Accounts']}
+  ];
+
+  const matched = mapping.find(m => startParam.includes(m.keyword));
+  if (!matched) {
+    select.style.display = 'block';
+    return;
+  }
+
+  const allowedValues = matched.value;
+
+  Array.from(select.options).forEach(opt => {
+    if (opt.value === '' || allowedValues.includes(opt.value)) {
+      opt.hidden = false;
+    } else {
+      opt.hidden = true;
+    }
+  });
+
+  select.value = allowedValues[0];
+  select.style.display = 'block';
+
+  updateTextBlocks('first_default', questionMappings);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initializeForm();
 });
@@ -76,89 +157,6 @@ async function initializeForm() {
       if (input) input.value = saved[qName] || '';
     });
   }
-
-function updateTextBlocks(dropdownId, mappings) {
-  const dropdown = document.getElementById(dropdownId);
-  const selectedValue = dropdown.value;
-  
-  mappings.forEach(([_, textBlockId]) => {
-    const block = document.getElementById(textBlockId);
-    if (block) block.style.display = 'none';
-  });
-
-  const textBlockId = mappings.find(([optionValue]) => optionValue === selectedValue)?.[1];
-  if (textBlockId) {
-    const block = document.getElementById(textBlockId);
-    if (block) block.style.display = 'block';
-  }
-}
-
-const questionMappings = [
-  ['Projects', 'textBlock1'],
-  ['Survey', 'textBlock2'],
-  ['Designer', 'textBlock3'],
-  ['Innovation', 'textBlock4'],
-  ['SMM', 'textBlock5'],
-  ['SMM в IT', 'textBlock6'],
-  ['Community marketing', 'textBlock7'],
-  ['Digital marketing', 'textBlock8'],
-  ['Accounts', 'textBlock9']
-];
-
-const questionMappings2 = [
-  ['Projects', 'textBlock1-2'],
-  ['Survey', 'textBlock2-2'],
-  ['Designer', 'textBlock3-2'],
-  ['Innovation', 'textBlock4-2'],
-  ['SMM', 'textBlock5-2'],
-  ['SMM в IT', 'textBlock6-2'],
-  ['Community marketing', 'textBlock7-2'],
-  ['Digital marketing', 'textBlock8-2'],
-  ['Accounts', 'textBlock9-2']
-];
-
-function configureFirstByStartParam() {
-  const select = document.getElementById('first_default');
-  if (!select) return;
-
-  const startParam = 'projects';
-
-  const mapping = [
-    { keyword: 'projects', value: ['Projects', 'Survey'] },
-    { keyword: 'survey', value: ['Survey'] },
-    { keyword: 'innovation',  value: ['Innovation', 'SMM в IT']},
-    { keyword: 'gen_smm',  value: ['SMM', 'SMM в IT']},
-    { keyword: 'it_smm',  value: ['SMM в IT']},
-    { keyword: 'com_marketing',  value: ['Community marketing']},
-    { keyword: 'dig_marketing',  value: ['Digital marketing']},
-    { keyword: 'accounts',  value: ['Accounts']}
-  ];
-
-  const matched = mapping.find(m => startParam.includes(m.keyword));
-
-  if (!matched) {
-    select.style.display = 'block';
-    return;
-  }
-
-  const allowedValues = matched.value; // всегда массив
-
-  // показать только разрешённые options
-  Array.from(select.options).forEach(opt => {
-    if (opt.value === '' || allowedValues.includes(opt.value)) {
-      opt.hidden = false;
-    } else {
-      opt.hidden = true;
-    }
-  });
-
-  // выбрать первый разрешённый
-  select.value = allowedValues[0];
-
-  select.style.display = 'block';
-
-  updateTextBlocks('first_default', questionMappings);
-}
 
 document.getElementById('first_default').addEventListener('change', () => {
   updateTextBlocks('first_default', questionMappings);
