@@ -1,26 +1,4 @@
-vkBridge.send('VKWebAppInit')
-  .then(() => {
-    console.log('VK Mini App initialized');
-    Promise.all([
-      vkBridge.send('VKWebAppGetLaunchParams'),
-      vkBridge.send('VKWebAppGetUserInfo')
-    ])
-      .then(([launchParams, userInfo]) => {
-        window.vkUserId = launchParams.vk_user_id || userInfo.id || 'test_user_123';
-        console.log('User Info:', userInfo); // { id, first_name, last_name, photo_200, ... }
-        initializeForm();
-      })
-      .catch(err => {
-        console.error('Failed to get launch params or user info:', err);
-        document.getElementById('reg-error').textContent = 'Ошибка получения данных: ' + err.message;
-        initializeForm();
-      });
-  })
-  .catch(err => {
-    console.error('VK init error:', err);
-    document.getElementById('reg-error').textContent = 'Ошибка инициализации VK: ' + err.message;
-    initializeForm();
-  });
+window.location.href = 'index.html';
 
 function initializeForm() {
   const form = document.getElementById('reg-form');
@@ -28,6 +6,19 @@ function initializeForm() {
     console.error('Form with ID "reg-form" not found');
     return;
   }
+
+  vkBridge.send('VKWebAppInit')
+  .then(() => {
+    console.log('VK Mini App initialized');
+    const u = vkBridge.send('VKWebAppGetUserInfo')
+    window.vkUserId = u.id
+    initializeForm();
+    configureFirstByStartParam()
+  })
+  .catch(err => {
+    console.error('VK init error:', err);
+    document.getElementById('reg-error').textContent = 'Ошибка инициализации VK: ' + err.message;
+  });
 
   document.addEventListener('DOMContentLoaded', () => {
     const selectCity = document.getElementById('city');
@@ -45,24 +36,6 @@ function initializeForm() {
       selectCitizen.addEventListener('change', () => {
         otherCitizenInput.style.display = selectCitizen.value === 'Другое' ? 'block' : 'none';
         otherCitizenInput.value = selectCitizen.value === 'Другое' ? otherCitizenInput.value : '';
-      });
-    }
-
-    const selectFirstDefault = document.getElementById('first_default');
-    const firstVideoInput = document.getElementById('first_video');
-    if (selectFirstDefault && firstVideoInput) {
-      selectFirstDefault.addEventListener('change', () => {
-        firstVideoInput.style.display = selectFirstDefault.value === 'Video Editor' ? 'block' : 'none';
-        firstVideoInput.value = selectFirstDefault.value === 'Video Editor' ? firstVideoInput.value : '';
-      });
-    }
-
-    const selectSecondDefault = document.getElementById('second_default');
-    const secondVideoInput = document.getElementById('second_video');
-    if (selectSecondDefault && secondVideoInput) {
-      selectSecondDefault.addEventListener('change', () => {
-        secondVideoInput.style.display = selectSecondDefault.value === 'Video Editor' ? 'block' : 'none';
-        secondVideoInput.value = selectSecondDefault.value === 'Video Editor' ? secondVideoInput.value : '';
       });
     }
 
@@ -99,57 +72,101 @@ function initializeForm() {
     });
   }
 
-  // Dynamic text blocks for dropdowns
-  const questionMappings = [
-    ['Projects', 'textBlock1'], ['Survey', 'textBlock2'], ['Corporate Marketing', 'textBlock3'],
-    ['SMM', 'textBlock4'], ['Video Editor', 'textBlock5'], ['Sales', 'textBlock6'],
-    ['University Partnership', 'textBlock7'], ['Account manager', 'textBlock8'],
-    ['Creator', 'textBlock9'], ['Research', 'textBlock10']
+function updateTextBlocks(dropdownId, mappings) {
+  const dropdown = document.getElementById(dropdownId);
+  const selectedValue = dropdown.value;
+  
+  mappings.forEach(([_, textBlockId]) => {
+    const block = document.getElementById(textBlockId);
+    if (block) block.style.display = 'none';
+  });
+
+  const textBlockId = mappings.find(([optionValue]) => optionValue === selectedValue)?.[1];
+  if (textBlockId) {
+    const block = document.getElementById(textBlockId);
+    if (block) block.style.display = 'block';
+  }
+}
+
+const questionMappings = [
+  ['Projects', 'textBlock1'],
+  ['Survey', 'textBlock2'],
+  ['Designer', 'textBlock3'],
+  ['Innovation', 'textBlock4'],
+  ['SMM', 'textBlock5'],
+  ['SMM в IT', 'textBlock6'],
+  ['Community marketing', 'textBlock7'],
+  ['Digital marketing', 'textBlock8'],
+  ['Accounts', 'textBlock9']
+];
+
+const questionMappings2 = [
+  ['Projects', 'textBlock1-2'],
+  ['Survey', 'textBlock2-2'],
+  ['Designer', 'textBlock3-2'],
+  ['Innovation', 'textBlock4-2'],
+  ['SMM', 'textBlock5-2'],
+  ['SMM в IT', 'textBlock6-2'],
+  ['Community marketing', 'textBlock7-2'],
+  ['Digital marketing', 'textBlock8-2'],
+  ['Accounts', 'textBlock9-2']
+];
+
+function configureFirstByStartParam() {
+  const select = document.getElementById('first_default');
+  if (!select) return;
+
+  const startParam = '-';
+
+  const mapping = [
+    { keyword: 'projects', value: ['Projects', 'Survey'] },
+    { keyword: 'survey', value: ['Survey'] },
+    { keyword: 'innovation',  value: ['Innovation', 'SMM в IT']},
+    { keyword: 'gen_smm',  value: ['SMM', 'SMM в IT']},
+    { keyword: 'it_smm',  value: ['SMM в IT']},
+    { keyword: 'com_marketing',  value: ['Community marketing']},
+    { keyword: 'dig_marketing',  value: ['Digital marketing']},
+    { keyword: 'accounts',  value: ['Accounts']}
   ];
 
-  const questionMappings2 = [
-    ['Projects', 'textBlock1-2'], ['Survey', 'textBlock2-2'], ['Corporate Marketing', 'textBlock3-2'],
-    ['SMM', 'textBlock4-2'], ['Video Editor', 'textBlock5-2'], ['Sales', 'textBlock6-2'],
-    ['University Partnership', 'textBlock7-2'], ['Account manager', 'textBlock8-2'],
-    ['Creator', 'textBlock9-2'], ['Research', 'textBlock10-2']
-  ];
+  const matched = mapping.find(m => startParam.includes(m.keyword));
 
-  function updateTextBlocks(dropdownId, mappings) {
-    const dropdown = document.getElementById(dropdownId);
-    const selectedValue = dropdown.value;
-    mappings.forEach(([_, textBlockId]) => {
-      const block = document.getElementById(textBlockId);
-      if (block) block.style.display = 'none';
-    });
-    const textBlockId = mappings.find(([optionValue]) => optionValue === selectedValue)?.[1];
-    if (textBlockId) {
-      const block = document.getElementById(textBlockId);
-      if (block) block.style.display = 'block';
+  if (!matched) {
+    select.style.display = 'block';
+    return;
+  }
+
+  const allowedValues = matched.value; // всегда массив
+
+  // показать только разрешённые options
+  Array.from(select.options).forEach(opt => {
+    if (opt.value === '' || allowedValues.includes(opt.value)) {
+      opt.hidden = false;
+    } else {
+      opt.hidden = true;
     }
-  }
-
-  document.getElementById('first_default')?.addEventListener('change', () => {
-    updateTextBlocks('first_default', questionMappings);
   });
 
-  document.getElementById('second_default')?.addEventListener('change', () => {
-    updateTextBlocks('second_default', questionMappings2);
-  });
+  // выбрать первый разрешённый
+  select.value = allowedValues[0];
 
-  function getSelectedCheckboxValues(name) {
-    const checkboxes = document.querySelectorAll(`input[name="${name}"]:checked`);
-    return Array.from(checkboxes).map(cb => cb.value);
-  }
+  select.style.display = 'block';
+
+  updateTextBlocks('first_default', questionMappings);
+}
+
+document.getElementById('first_default').addEventListener('change', () => {
+  updateTextBlocks('first_default', questionMappings);
+});
+
+document.getElementById('second_default').addEventListener('change', () => {
+  updateTextBlocks('second_default', questionMappings2);
+});
 
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
-    const fileInput = document.getElementById('fileInput');
-    const file = fileInput?.files[0];
     const formData = new FormData(form);
     const errorEl = document.getElementById('reg-error');
-    const selectedFirstVideoValues = getSelectedCheckboxValues('first_video');
-    const selectedSecondVideoValues = getSelectedCheckboxValues('second_video');
-
     const data = {
       surname: formData.get('surname'),
       name: formData.get('name'),
@@ -208,7 +225,7 @@ function initializeForm() {
       if (foreign_phone) {
         data.phone = foreign_phone;
       } else if (!/^[7]\d{10}$/.test(phone_check)) {
-        errorEl.textContent = 'Phone must be 11 characters, format: 7XXXXXXXXXX';
+        errorEl.textContent = 'Телефон должен состоять из 11 цифр, формат: 7XXXXXXXXXX';
         return;
       }
 
@@ -255,134 +272,240 @@ function initializeForm() {
     // Process form data
     if (data.city === 'Другой') data.city = data.city_other;
     if (data.citizen === 'Другое') data.citizen = data.citizen_other;
-    if (window.isVideo) {
-      data.first = 'Video Editor';
-      data.second = 'Video Editor';
-    }
 
-    // Approval logic
     let approved_first = 'ок';
-    if (
-      (data.hours === 'Менее 20 часов' || data.hours === '20 часов и более') ||
-      (data.study === 'Среднее общее (школа)') ||
-      (data.first === 'Account manager' && (
-        data.finished === '2029 и позднее' ||
-        (data.study === 'Магистратура' && (data.finished === '2022 и ранее' || data.finished === '2028')) ||
-        (data.study === 'Аспирантура' && (data.finished !== '2026' && data.finished !== '2027' && data.finished !== '2028')) ||
-        (data.study === 'Среднее специальное' && (data.finished !== '2024' && data.finished !== '2025' && data.finished !== '2026'))
-      )) ||
-      (data.first === 'Projects' && (
-        data.finished === '2029 и позднее' ||
-        (data.study === 'Среднее специальное' && !['2025', '2026', '2027'].includes(data.finished))
-      )) ||
-      (data.first === 'Video Editor' && (
-        data.finished === '2029 и позднее' ||
-        (data.study === 'Среднее специальное' && data.finished !== '2026')
-      )) ||
-      (data.first === 'Research' && (
-        !['2025', '2026', '2027'].includes(data.finished) ||
-        (data.study === 'Среднее специальное' && data.finished !== '2026')
-      ))
-    ) {
-      approved_first = 'отказ';
-    }
+  if (
+    data.hours === 'Менее 20 часов' ||
+    data.study === "Среднее общее (школа)" ||
+    // --- Projects ---
+    (data.first === 'Projects' && (
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет" || data.study === "Магистратура" || data.study === "Аспирантура") &&
+        (data.finished === "2029 и позднее" || data.finished === "2021 и ранее")
+      ) ||
+      (
+        data.study === "Среднее специальное" &&
+        (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027")
+      ) ||
+      data.hours === "20 часов"
+    )) ||
+    // --- Survey ---
+    (data.first === 'Survey' && (
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет" || data.study === "Магистратура" || data.study === "Аспирантура") &&
+        (data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027")
+      ) ||
+      (
+        data.study === "Среднее специальное" &&
+        data.finished !== "2026"
+      ) ||
+      data.hours === "20 часов"
+    )) ||
+    // --- Designer ---
+    (data.first === 'Designer' && (
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет" || data.study === "Магистратура" || data.study === "Аспирантура") &&
+        (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027" && data.finished !== "2028")
+      ) ||
+      (
+        data.study === "Среднее специальное" &&
+        (data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027")
+      )
+    )) ||
+    // --- Innovation ---
+    (data.first === 'Innovation' && (
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет" || data.study === "Магистратура" || data.study === "Аспирантура") &&
+        (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027")
+      ) ||
+      data.study === "Среднее специальное" ||
+      data.hours === "20 часов и более"
+    )) ||
+    // --- SMM ---
+    (data.first === 'SMM' && (
+      data.study === "Аспирантура" ||
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет" || data.study === "Магистратура") &&
+        (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027" && data.finished !== "2028")
+      ) ||
+      (
+        data.study === "Среднее специальное" &&
+        data.finished !== "2026"
+      )
+    )) ||
+    // --- SMM в IT ---
+    (data.first === 'SMM в IT' && (
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет" || data.study === "Магистратура") &&
+        (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027" && data.finished !== "2028")
+      ) ||
+      data.study === "Аспирантура" ||
+      data.study === "Среднее специальное" ||
+      data.hours === "20 часов и более"
+    )) ||
+    // --- Community marketing ---
+    (data.first === 'Community marketing' && (
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет" || data.study === "Магистратура" || data.study === "Аспирантура") &&
+        (data.finished === "2029 и позднее" || data.finished === "2021 и ранее")
+      ) ||
+      (
+        data.study === "Среднее специальное" &&
+        (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027")
+      )
+    )) ||
+    // --- Digital marketing ---
+    (data.first === 'Digital marketing' && (
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет" || data.study === "Магистратура" || data.study === "Аспирантура") &&
+        (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027")
+      ) ||
+      (
+        data.study === "Среднее специальное" &&
+        (data.finished !== "2025" && data.finished !== "2026")
+      ) ||
+      data.hours === "20 часов и более"
+    )) ||
+    // --- Accounts ---
+    (data.first === 'Accounts' && (
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет") &&
+        data.finished === "2029 и позднее"
+      ) ||
+      (
+        data.study === "Магистратура" &&
+        (data.finished !== "2023" && data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027")
+      ) ||
+      (
+        data.study === "Аспирантура" &&
+        (data.finished !== "2026" && data.finished !== "2027" && data.finished !== "2028")
+      ) ||
+      (
+        data.study === "Среднее специальное" &&
+        (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026")
+      ) ||
+      data.hours === "20 часов и более"
+    ))
+  ) {
+    approved_first = 'отказ';
+  }
 
     let approved_second = 'ок';
-    if (
-      (data.hours === 'Менее 20 часов' || data.hours === '20 часов и более') ||
-      (data.study === 'Среднее общее (школа)') ||
-      (data.second === 'Account manager' && (
-        data.finished === '2029 и позднее' ||
-        (data.study === 'Магистратура' && (data.finished === '2022 и ранее' || data.finished === '2028')) ||
-        (data.study === 'Аспирантура' && (data.finished !== '2026' && data.finished !== '2027' && data.finished !== '2028')) ||
-        (data.study === 'Среднее специальное' && (data.finished !== '2024' && data.finished !== '2025' && data.finished !== '2026'))
-      )) ||
-      (data.second === 'Projects' && (
-        data.finished === '2029 и позднее' ||
-        (data.study === 'Среднее специальное' && !['2025', '2026', '2027'].includes(data.finished))
-      )) ||
-      (data.second === 'Video Editor' && (
-        data.finished === '2029 и позднее' ||
-        (data.study === 'Среднее специальное' && data.finished !== '2026')
-      )) ||
-      (data.second === 'Research' && (
-        !['2025', '2026', '2027'].includes(data.finished) ||
-        (data.study === 'Среднее специальное' && data.finished !== '2026')
-      ))
-    ) {
-      approved_second = 'отказ';
-    }
-
-    if (selectedFirstVideoValues || selectedSecondVideoValues) {
-      window.selectedVideoValues = [...new Set([...selectedFirstVideoValues, ...selectedSecondVideoValues])];
-    } else {
-      window.selectedVideoValues = [];
-    }
-
-    // File validation and upload
-    let attachmentData = null;
-    if (file) {
-      const validateFile = (file) => {
-        if (file.size > 15 * 1024 * 1024) return 'Файл слишком большой (макс. 15MB)';
-        const validTypes = [
-          'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          'image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'
-        ];
-        if (!validTypes.includes(file.type)) return 'Неподдерживаемый формат файла';
-        return null;
-      };
-
-      const validationError = validateFile(file);
-      if (validationError) {
-        errorEl.textContent = validationError;
-        return;
-      }
-
-      try {
-        const uploadFormData = new FormData();
-        uploadFormData.append('file', file);
-        uploadFormData.append('path', 'solutions');
-
-        const uploadResponse = await fetch('https://ndb.fut.ru/api/v2/storage/upload', {
-          method: 'POST',
-          headers: {
-            'xc-token': 'crDte8gB-CSZzNujzSsy9obQRqZYkY3SNp8wre88'
-          },
-          body: uploadFormData
-        });
-
-        let uploadData = await uploadResponse.json();
-        if (!Array.isArray(uploadData)) uploadData = [uploadData];
-        if (!uploadData.length || !uploadData[0]?.signedUrl) {
-          throw new Error('Не удалось получить информацию о файле');
-        }
-
-        const firstItem = uploadData[0];
-        const fileName = firstItem.title || file.name;
-        const fileType = firstItem.mimetype;
-        const fileSize = firstItem.size;
-
-        const getFileIcon = (mimeType) => {
-          if (mimeType.includes('pdf')) return 'mdi-file-pdf-outline';
-          if (mimeType.includes('word')) return 'mdi-file-word-outline';
-          if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) return 'mdi-file-excel-outline';
-          if (mimeType.includes('png')) return 'mdi-file-image-outline';
-          return 'mdi-file-outline';
-        };
-
-        attachmentData = [{
-          mimetype: fileType,
-          size: fileSize,
-          title: fileName,
-          url: firstItem.url,
-          icon: getFileIcon(fileType)
-        }];
-      } catch (err) {
-        errorEl.textContent = 'Не удалось загрузить файл: ' + err.message;
-        return;
-      }
-    }
+  if (
+    data.hours === 'Менее 20 часов' ||
+    data.study === "Среднее общее (школа)" ||
+    // --- Projects ---
+    (data.second === 'Projects' && (
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет" || data.study === "Магистратура" || data.study === "Аспирантура") &&
+        (data.finished === "2029 и позднее" || data.finished === "2021 и ранее")
+      ) ||
+      (
+        data.study === "Среднее специальное" &&
+        (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027")
+      ) ||
+      data.hours === "20 часов"
+    )) ||
+    // --- Survey ---
+    (data.second === 'Survey' && (
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет" || data.study === "Магистратура" || data.study === "Аспирантура") &&
+        (data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027")
+      ) ||
+      (
+        data.study === "Среднее специальное" &&
+        data.finished !== "2026"
+      ) ||
+      data.hours === "20 часов"
+    )) ||
+    // --- Designer ---
+    (data.second === 'Designer' && (
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет" || data.study === "Магистратура" || data.study === "Аспирантура") &&
+        (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027" && data.finished !== "2028")
+      ) ||
+      (
+        data.study === "Среднее специальное" &&
+        (data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027")
+      )
+    )) ||
+    // --- Innovation ---
+    (data.second === 'Innovation' && (
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет" || data.study === "Магистратура" || data.study === "Аспирантура") &&
+        (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027")
+      ) ||
+      data.study === "Среднее специальное" ||
+      data.hours === "20 часов и более"
+    )) ||
+    // --- SMM ---
+    (data.second === 'SMM' && (
+      data.study === "Аспирантура" ||
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет" || data.study === "Магистратура") &&
+        (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027" && data.finished !== "2028")
+      ) ||
+      (
+        data.study === "Среднее специальное" &&
+        data.finished !== "2026"
+      )
+    )) ||
+    // --- SMM в IT ---
+    (data.second === 'SMM в IT' && (
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет" || data.study === "Магистратура") &&
+        (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027" && data.finished !== "2028")
+      ) ||
+      data.study === "Аспирантура" ||
+      data.study === "Среднее специальное" ||
+      data.hours === "20 часов и более"
+    )) ||
+    // --- Community marketing ---
+    (data.second === 'Community marketing' && (
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет" || data.study === "Магистратура" || data.study === "Аспирантура") &&
+        (data.finished === "2029 и позднее" || data.finished === "2021 и ранее")
+      ) ||
+      (
+        data.study === "Среднее специальное" &&
+        (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027")
+      )
+    )) ||
+    // --- Digital marketing ---
+    (data.second === 'Digital marketing' && (
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет" || data.study === "Магистратура" || data.study === "Аспирантура") &&
+        (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027")
+      ) ||
+      (
+        data.study === "Среднее специальное" &&
+        (data.finished !== "2025" && data.finished !== "2026")
+      ) ||
+      data.hours === "20 часов и более"
+    )) ||
+    // --- Accounts ---
+    (data.second === 'Accounts' && (
+      (
+        (data.study === "Бакалавриат" || data.study === "Специалитет") &&
+        data.finished === "2029 и позднее"
+      ) ||
+      (
+        data.study === "Магистратура" &&
+        (data.finished !== "2023" && data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027")
+      ) ||
+      (
+        data.study === "Аспирантура" &&
+        (data.finished !== "2026" && data.finished !== "2027" && data.finished !== "2028")
+      ) ||
+      (
+        data.study === "Среднее специальное" &&
+        (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026")
+      ) ||
+      data.hours === "20 часов и более"
+    ))
+  ) {
+    approved_second = 'отказ';
+  }
 
     // Submit form data
     try {
@@ -410,9 +533,7 @@ function initializeForm() {
           'Скрининг итог (первый)': approved_first,
           'Скрининг итог (второй)': approved_second,
           'tg-id': window.vkUserId,
-          'start-param': 'VK',
-          'Инструменты Video Editor': window.selectedVideoValues.join(', '),
-          'Резюме': attachmentData
+          'start-param': 'VK'
         })
       });
 
@@ -430,9 +551,6 @@ function initializeForm() {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
-
-
-
 
 
 
