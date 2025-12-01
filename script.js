@@ -95,7 +95,7 @@ async function initializeForm() {
     console.log('VK Mini App initialized');
 
     const u = await vkBridge.send('VKWebAppGetUserInfo');
-    window.vkUserId = (u.id && '_VK');
+    window.vkUserId = `${u.id}_VK`;
 
     configureFirstByStartParam();
   } catch (err) {
@@ -554,6 +554,7 @@ document.getElementById('second_default').addEventListener('change', () => {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
 
