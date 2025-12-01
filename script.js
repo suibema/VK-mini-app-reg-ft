@@ -202,7 +202,7 @@ document.getElementById('second_default').addEventListener('change', () => {
 
     // Check for duplicate email
     try {
-      const res = await fetch(`https://ndb.fut.ru/api/v2/tables/moqj9txmglwy87u/records/count?where=(E-mail,eq,${encodeURIComponent(data.email)})`, {
+      const res = await fetch(`https://ndb.fut.ru/api/v2/tables/m6tyxd3346dlhco/records/count?where=(E-mail,eq,${encodeURIComponent(data.email)})`, {
         method: 'GET',
         headers: {
           'accept': 'application/json',
@@ -232,7 +232,7 @@ document.getElementById('second_default').addEventListener('change', () => {
         return;
       }
 
-      const res = await fetch(`https://ndb.fut.ru/api/v2/tables/moqj9txmglwy87u/records/count?where=(Номер телефона,eq,${encodeURIComponent(data.phone)})`, {
+      const res = await fetch(`https://ndb.fut.ru/api/v2/tables/m6tyxd3346dlhco/records/count?where=(Номер телефона,eq,${encodeURIComponent(data.phone)})`, {
         method: 'GET',
         headers: {
           'accept': 'application/json',
@@ -253,7 +253,7 @@ document.getElementById('second_default').addEventListener('change', () => {
 
     // Check for duplicate vk_user_id
     try {
-      const res = await fetch(`https://ndb.fut.ru/api/v2/tables/moqj9txmglwy87u/records/count?where=(tg-id,eq,${window.vkUserId})`, {
+      const res = await fetch(`https://ndb.fut.ru/api/v2/tables/m6tyxd3346dlhco/records/count?where=(tg-id,eq,${window.vkUserId})`, {
         method: 'GET',
         headers: {
           'accept': 'application/json',
@@ -512,7 +512,7 @@ document.getElementById('second_default').addEventListener('change', () => {
 
     // Submit form data
     try {
-      const res = await fetch('https://ndb.fut.ru/api/v2/tables/moqj9txmglwy87u/records', {
+      const res = await fetch('https://ndb.fut.ru/api/v2/tables/m6tyxd3346dlhco/records', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -554,6 +554,7 @@ document.getElementById('second_default').addEventListener('change', () => {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
 
