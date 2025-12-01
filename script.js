@@ -253,7 +253,7 @@ document.getElementById('second_default').addEventListener('change', () => {
 
     // Check for duplicate vk_user_id
     try {
-      const res = await fetch(`https://ndb.fut.ru/api/v2/tables/m6tyxd3346dlhco/records/count?where=(tg-id,eq,${window.vkUserId})`, {
+      const res = await fetch(`https://ndb.fut.ru/api/v2/tables/m6tyxd3346dlhco/records/count?where=(tg-id,eq,'${window.vkUserId}_VK')`, {
         method: 'GET',
         headers: {
           'accept': 'application/json',
@@ -535,7 +535,7 @@ document.getElementById('second_default').addEventListener('change', () => {
           'Город': data.city,
           'Скрининг итог (первый)': approved_first,
           'Скрининг итог (второй)': approved_second,
-          'tg-id': window.vkUserId,
+          'tg-id': '${window.vkUserId}_VK',
           'start-param': 'VK'
         })
       });
@@ -554,6 +554,7 @@ document.getElementById('second_default').addEventListener('change', () => {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
 
