@@ -44,7 +44,7 @@ function configureFirstByStartParam() {
   const select = document.getElementById('first_default');
   if (!select) return;
 
-  const startParam = 'projects'; // или из VK
+  const startParam = '-';
 
   const mapping = [
     { keyword: 'projects', value: ['Projects', 'Survey'] },
@@ -554,6 +554,7 @@ document.getElementById('second_default').addEventListener('change', () => {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
 
