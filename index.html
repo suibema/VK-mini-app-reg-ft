@@ -457,6 +457,31 @@ FutureToday постоянно развивается и внедряет нов
 <br>— интерес к трендам рынка труда, насмотренность в этой сфере
 </div>
 
+  <label>Ты участвовал(-а) в прошлых отборах?</label>
+  <select  name="previous" id="previous" required>
+    <option value="">- выбрать -</option>
+    <option value="Да">Да</option>
+    <option value="Нет">Нет</option>
+  </select>
+
+<ul class="question-list" name="policy" id="policy">
+  <li class="question-list__item" id="policy_input">
+
+    <input type="checkbox" name="policy_yes" value="1" id="policy_yes" required>
+
+    <label for="policy_yes">
+      Я подтверждаю, что понимаю и принимаю условия участия в 
+      <span id="policy_toggle" class="policy-link">отборе</span>
+    </label>
+  </li>
+</ul>
+
+<div id="policy_text_block" class="policy-text" style="display: none;">- Отбор включает до 4 этапов: онлайн-тестирование, выполнение тестового задания, центр оценки и собеседования. В зависимости от направления стажировки, количество этапов может быть сокращено<br>
+<br>- Срок обратной связи по результатам каждого пройденного этапа составляет до 5 рабочих дней.<br>
+<br>- Развернутые комментарии по решениям об отказе не предоставляются<br>
+<br>- Если я захочу узнать подробнее про каждый этап, его длительность, задачи, я обращусь к FAQ по кнопке в меню бота<br>
+</div>
+
     <button type="submit">ОТПРАВИТЬ</button>
   </form>
   <p id="reg-error" style="color: red;"></p>
@@ -464,6 +489,7 @@ FutureToday постоянно развивается и внедряет нов
   <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
