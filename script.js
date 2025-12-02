@@ -135,6 +135,16 @@ async function initializeForm() {
     }
   });
 
+  document.addEventListener("DOMContentLoaded", () => {
+  const toggle = document.getElementById("policy_toggle");
+  const block = document.getElementById("policy_text_block");
+
+  toggle.addEventListener("click", () => {
+    block.style.display = block.style.display === "none" ? "block" : "none";
+  });
+});
+
+
   const questionNames = [
     'surname', 'name', 'email', 'phone', 'city', 'city-other',
     'citizen', 'citizen-other', 'vuz', 'specialty', 'study', 'finished',
@@ -185,7 +195,8 @@ document.getElementById('second_default').addEventListener('change', () => {
       finished: formData.get('finished'),
       hours: formData.get('hours'),
       first: formData.get('first'),
-      second: formData.get('second')
+      second: formData.get('second'),
+      previous: formData.get('previous')
     };
 
     const submitBtn = this.querySelector('button[type="submit"]');
@@ -536,7 +547,8 @@ document.getElementById('second_default').addEventListener('change', () => {
           'Скрининг итог (первый)': approved_first,
           'Скрининг итог (второй)': approved_second,
           'tg-id': window.vkUserId,
-          'start-param': 'VK'
+          'start-param': 'VK',
+          'Прошлый отбор': data.previous
         })
       });
 
@@ -554,6 +566,7 @@ document.getElementById('second_default').addEventListener('change', () => {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
 
