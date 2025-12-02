@@ -306,4 +306,24 @@ img {
   padding: 0px;
   margin: 5px 0;
   font-size: 0.9rem;
+
+}
+
+.policy-link {
+  text-decoration: underline;
+  cursor: pointer;
+  color: #0066cc;
+}
+
+.policy-link:hover {
+  color: #004499;
+}
+
+.policy-text {
+  margin-bottom: 20px;
+  padding: 10px;
+  background: #f5f5f5;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.4;
 }
