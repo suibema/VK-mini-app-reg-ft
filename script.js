@@ -133,16 +133,13 @@ async function initializeForm() {
         foreignPhoneType.value = foreignPhoneYes.checked ? foreignPhoneType.value : '';
       });
     }
-  });
 
-  document.addEventListener("DOMContentLoaded", () => {
-  const toggle = document.getElementById("policy_toggle");
-  const block = document.getElementById("policy_text_block");
-
-  toggle.addEventListener("click", () => {
+    const toggle = document.getElementById("policy_toggle");
+    const block = document.getElementById("policy_text_block");
+    toggle.addEventListener("click", () => {
     block.style.display = block.style.display === "none" ? "block" : "none";
   });
-});
+  });
 
 
   const questionNames = [
@@ -566,6 +563,7 @@ document.getElementById('second_default').addEventListener('change', () => {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
 
