@@ -239,6 +239,11 @@ document.getElementById('second_default').addEventListener('change', () => {
         errorEl.textContent = 'Телефон должен состоять из 11 цифр, формат: 7XXXXXXXXXX';
         return;
       }
+    
+      if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(data.email)) {
+    errorEl.textContent = 'Введи корректный e-mail (user@domain.com)';
+    return;
+    }
 
       const res = await fetch(`https://ndb.fut.ru/api/v2/tables/m6tyxd3346dlhco/records/count?where=(Номер телефона,eq,${encodeURIComponent(data.phone)})`, {
         method: 'GET',
@@ -563,6 +568,7 @@ document.getElementById('second_default').addEventListener('change', () => {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
 
