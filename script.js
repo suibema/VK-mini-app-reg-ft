@@ -83,6 +83,42 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeForm();
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById("policy_toggle");
+  const block = document.getElementById("policy_text_block");
+
+  toggle.addEventListener("click", () => {
+    block.style.display = block.style.display === "none" ? "block" : "none";
+  });
+  
+  const selectCity = document.getElementById('city');
+  const otherCityInput = document.getElementById('city-other');
+  if (selectCity && otherCityInput) {
+    selectCity.addEventListener('change', () => {
+      otherCityInput.style.display = selectCity.value === 'Другой' ? 'block' : 'none';
+      otherCityInput.value = selectCity.value === 'Другой' ? otherCityInput.value : '';
+    });
+  }
+
+  const selectCitizen = document.getElementById('citizen');
+  const otherCitizenInput = document.getElementById('citizen-other');
+  if (selectCitizen && otherCitizenInput) {
+    selectCitizen.addEventListener('change', () => {
+      otherCitizenInput.style.display = selectCitizen.value === 'Другое' ? 'block' : 'none';
+      otherCitizenInput.value = selectCitizen.value === 'Другое' ? otherCitizenInput.value : '';
+    });
+  }
+
+  const foreignPhoneYes = document.getElementById('foreign_phone_yes');
+  const foreignPhoneType = document.getElementById('foreign_phone_type');
+  if (foreignPhoneYes && foreignPhoneType) {
+    foreignPhoneYes.addEventListener('change', () => {
+      foreignPhoneType.style.display = foreignPhoneYes.checked ? 'block' : 'none';
+      foreignPhoneType.value = foreignPhoneYes.checked ? foreignPhoneType.value : '';
+    });
+  }
+});
+
 async function initializeForm() {
   const form = document.getElementById('reg-form');
   if (!form) {
@@ -105,41 +141,6 @@ async function initializeForm() {
       errorEl.textContent = 'Ошибка инициализации VK: ' + err.message;
     }
   }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const selectCity = document.getElementById('city');
-    const otherCityInput = document.getElementById('city-other');
-    if (selectCity && otherCityInput) {
-      selectCity.addEventListener('change', () => {
-        otherCityInput.style.display = selectCity.value === 'Другой' ? 'block' : 'none';
-        otherCityInput.value = selectCity.value === 'Другой' ? otherCityInput.value : '';
-      });
-    }
-
-    const selectCitizen = document.getElementById('citizen');
-    const otherCitizenInput = document.getElementById('citizen-other');
-    if (selectCitizen && otherCitizenInput) {
-      selectCitizen.addEventListener('change', () => {
-        otherCitizenInput.style.display = selectCitizen.value === 'Другое' ? 'block' : 'none';
-        otherCitizenInput.value = selectCitizen.value === 'Другое' ? otherCitizenInput.value : '';
-      });
-    }
-
-    const foreignPhoneYes = document.getElementById('foreign_phone_yes');
-    const foreignPhoneType = document.getElementById('foreign_phone_type');
-    if (foreignPhoneYes && foreignPhoneType) {
-      foreignPhoneYes.addEventListener('change', () => {
-        foreignPhoneType.style.display = foreignPhoneYes.checked ? 'block' : 'none';
-        foreignPhoneType.value = foreignPhoneYes.checked ? foreignPhoneType.value : '';
-      });
-    }
-
-    const toggle = document.getElementById("policy_toggle");
-    const block = document.getElementById("policy_text_block");
-    toggle.addEventListener("click", () => {
-    block.style.display = block.style.display === "none" ? "block" : "none";
-  });
-  });
 
 
   const questionNames = [
@@ -568,6 +569,7 @@ document.getElementById('second_default').addEventListener('change', () => {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
 
