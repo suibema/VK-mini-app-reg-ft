@@ -327,3 +327,18 @@ img {
   font-size: 14px;
   line-height: 1.4;
 }
+
+#screen-reg,
+#screen-bye {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+}
+
