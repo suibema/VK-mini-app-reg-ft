@@ -22,6 +22,14 @@ const questionMappings2 = [
   ['Accounts', 'textBlock9-2']
 ];
 
+function showScreen(name) {
+const screens = document.querySelectorAll('.screen');
+screens.forEach(el => {
+if (!el.id.startsWith('screen-')) return;
+el.style.display = (el.id === `screen-${name}`) ? 'block' : 'none';
+});
+}
+
 function updateTextBlocks(dropdownId, mappings) {
   const dropdown = document.getElementById(dropdownId);
   if (!dropdown) return;
@@ -80,6 +88,7 @@ function configureFirstByStartParam() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  showScreen('reg');
   initializeForm();
 });
 
@@ -87,9 +96,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const toggle = document.getElementById("policy_toggle");
   const block = document.getElementById("policy_text_block");
 
+  if (toggle && block) {
   toggle.addEventListener("click", () => {
-    block.style.display = block.style.display === "none" ? "block" : "none";
+  block.style.display = block.style.display === "none" ? "block" : "none";
   });
+  }
   
   const selectCity = document.getElementById('city');
   const otherCityInput = document.getElementById('city-other');
@@ -178,6 +189,8 @@ document.getElementById('second_default').addEventListener('change', () => {
     e.preventDefault();
     const formData = new FormData(form);
     const errorEl = document.getElementById('reg-error');
+    errorEl.textContent = '';
+    
     const data = {
       surname: formData.get('surname'),
       name: formData.get('name'),
@@ -557,6 +570,7 @@ document.getElementById('second_default').addEventListener('change', () => {
 
       if (res.ok) {
         window.location.href = 'bye.html';
+        showScreen('bye');
       } else {
         errorEl.textContent = 'Ошибка при сохранении данных';
       }
@@ -569,6 +583,7 @@ document.getElementById('second_default').addEventListener('change', () => {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
 
