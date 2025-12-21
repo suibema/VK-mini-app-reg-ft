@@ -14,10 +14,10 @@
   <h2>Регистрация</h2>
   <form id="reg-form">
     <label>Фамилия</label>
-    <input type="text" required name="surname" id="surname"/>
+    <input type="text" pattern="[^a-zA-Z]+" required name="surname" id="surname"/>
 
     <label>Имя</label>
-    <input type="text" required name="name" id="name"/>
+    <input type="text" pattern="[^a-zA-Z]+" required name="name" id="name"/>
 
     <label>E-mail</label>
     <input type="text" required name="email" id="email" placeholder="your@email.com" />
@@ -44,7 +44,7 @@
       <option value="Другой">Другой</option>
     </select>
     
-    <input type="text" name="city-other" id="city-other" placeholder="Напиши свой город" style="display: none;">
+    <input type="text" pattern="[^a-zA-Z]+" name="city-other" id="city-other" placeholder="Напиши свой город" style="display: none;">
     
     <label>Гражданство</label>
     <select name="citizen" required id="citizen">
@@ -57,13 +57,13 @@
       <option value="Другое">Другое</option>
     </select>
     
-    <input type="text" name="citizen-other" id="citizen-other" placeholder="Напиши свое гражданство" style="display: none;">
+    <input type="text" pattern="[^a-zA-Z]+" name="citizen-other" id="citizen-other" placeholder="Напиши свое гражданство" style="display: none;">
 
     <label>В каком учебном заведении ты обучаешься или закончил?</label>
-    <input type="text" required name="vuz" id="vuz"/>
+    <input type="text" pattern="[^a-zA-Z]+" required name="vuz" id="vuz"/>
     
     <label>Специальность</label>
-    <input type="text" required name="specialty" id="specialty"/>
+    <input type="text" pattern="[^a-zA-Z]+" required name="specialty" id="specialty"/>
     
     <label>Степень обучения</label>
     <select name="study" required>
@@ -501,6 +501,7 @@ FutureToday постоянно развивается и внедряет нов
   <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
