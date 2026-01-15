@@ -319,7 +319,7 @@ document.getElementById('second_default').addEventListener('change', () => {
         data.study === "Среднее специальное" &&
         (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027")
       ) ||
-      data.hours === "20 часов"
+      (data.hours === "20 часов" || data.hours === "30 часов")
     )) ||
     // --- Survey ---
     (data.first === 'Survey' && (
@@ -436,7 +436,7 @@ document.getElementById('second_default').addEventListener('change', () => {
         data.study === "Среднее специальное" &&
         (data.finished !== "2024" && data.finished !== "2025" && data.finished !== "2026" && data.finished !== "2027")
       ) ||
-      data.hours === "20 часов"
+      (data.hours === "20 часов" || data.hours === "30 часов")
     )) ||
     // --- Survey ---
     (data.second === 'Survey' && (
@@ -667,6 +667,7 @@ document.getElementById('second_default').addEventListener('change', () => {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
 
