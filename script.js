@@ -88,7 +88,7 @@ function configureFirstByStartParam() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  showScreen('reg');
+  showScreen('block');
   initializeForm();
 });
 
@@ -667,6 +667,7 @@ document.getElementById('second_default').addEventListener('change', () => {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
 
