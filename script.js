@@ -88,7 +88,6 @@ function configureFirstByStartParam() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  window.location.href = 'index.html';
   showScreen('reg');
   initializeForm();
 });
@@ -668,6 +667,7 @@ document.getElementById('second_default').addEventListener('change', () => {
   form.addEventListener('input', saveForm);
   restoreForm();
 }
+
 
 
 
